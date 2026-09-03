@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#00c853">
+<title>PredictAI Pro</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#07110b;
+    color:#fff;
+    min-height:100vh;
+}
+
+header{
+    background:linear-gradient(135deg,#00c853,#087f23);
+    padding:18px 16px;
+    position:sticky;
+    top:0;
+    z-index:10;
+    box-shadow:0 4px 20px rgba(0,0,0,.35);
+}
+
+.header-content{
+    max-width:900px;
+    margin:auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.logo{
+    font-size:23px;
+    font-weight:900;
+}
+
+.logo span{
+    color:#d7ffdf;
+}
+
+.status{
+    background:rgba(0,0,0,.25);
+    padding:7px 11px;
+    border-radius:20px;
+    font-size:12px;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+    padding:18px;
+}
+
+.hero{
+    background:linear-gradient(145deg,#102319,#0b1710);
+    border:1px solid #164b28;
+    border-radius:20px;
+    padding:24px 18px;
+    text-align:center;
+    margin-bottom:18px;
+}
+
+.hero h1{
+    font-size:30px;
+    margin-bottom:8px;
+}
+
+.hero h1 span{
+    color:#00e676;
+}
+
+.hero p{
+    color:#a9b9ae;
+    line-height:1.5;
+    font-size:14px;
+}
+
+.buttons{
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+}
+
+button{
+    border:0;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.main-btn{
+    flex:1;
+    padding:14px;
+    border-radius:12px;
+    background:#00c853;
+    color:#001b09;
+    font-size:14px;
+}
+
+.vip-btn{
+    flex:1;
+    padding:14px;
+    border-radius:12px;
+    background:#d8ff00;
+    color:#111;
+    font-size:14px;
+}
+
+.section-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:22px 2px 12px;
+}
+
+.section-title h2{
+    font-size:19px;
+}
+
+.badge{
+    background:#123d22;
+    color:#00e676;
+    padding:5px 9px;
+    border-radius:10px;
+    font-size:11px;
+}
+
+.match{
+    background:#0d1b12;
+    border:1px solid #173d24;
+    border-radius:16px;
+    padding:16px;
+    margin-bottom:12px;
+}
+
+.match-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:13px;
+}
+
+.league{
+    color:#87998d;
+    font-size:11px;
+}
+
+.live{
+    color:#00e676;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.teams{
+    display:grid;
+    grid-template-columns:1fr 50px 1fr;
+    align-items:center;
+    text-align:center;
+    gap:5px;
+}
+
+.team{
+    font-size:14px;
+    font-weight:bold;
+}
+
+.vs{
+    color:#718076;
+    font-size:12px;
+}
+
+.prediction{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:7px;
+    margin-top:15px;
+}
+
+.pred{
+    background:#07110b;
+    border-radius:10px;
+    padding:10px 5px;
+    text-align:center;
+}
+
+.pred small{
+    display:block;
+    color:#77877c;
+    font-size:9px;
+    margin-bottom:4px;
+}
+
+.pred strong{
+    color:#00e676;
+    font-size:14px;
+}
+
+.vip-card{
+    background:linear-gradient(145deg,#132512,#0b170d);
+    border:1px solid #527500;
+    border-radius:18px;
+    padding:20px;
+    margin-top:12px;
+    position:relative;
+    overflow:hidden;
+}
+
+.vip-card:before{
+    content:"VIP";
+    position:absolute;
+    right:-10px;
+    top:8px;
+    font-size:55px;
+    font-weight:900;
+    color:rgba(216,255,0,.05);
+}
+
+.vip-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.vip-title{
+    color:#d8ff00;
+    font-size:20px;
+    font-weight:900;
+}
+
+.vip-lock{
+    font-size:20px;
+}
+
+.vip-list{
+    list-style:none;
+    margin:15px 0;
+}
+
+.vip-list li{
+    padding:7px 0;
+    color:#c6d2c9;
+    font-size:13px;
+}
+
+.vip-list li::before{
+    content:"✓";
+    color:#00e676;
+    font-weight:bold;
+    margin-right:8px;
+}
+
+.vip-access{
+    width:100%;
+    background:#d8ff00;
+    color:#111;
+    padding:13px;
+    border-radius:11px;
+    font-size:14px;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin-top:15px;
+}
+
+.stat{
+    background:#0d1b12;
+    border:1px solid #173d24;
+    border-radius:14px;
+    padding:14px 5px;
+    text-align:center;
+}
+
+.stat strong{
+    display:block;
+    color:#00e676;
+    font-size:20px;
+}
+
+.stat span{
+    color:#7f9085;
+    font-size:10px;
+}
+
+footer{
+    text-align:center;
+    padding:28px 10px;
+    color:#66746b;
+    font-size:11px;
+}
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.8);
+    z-index:100;
+    padding:20px;
+    align-items:center;
+    justify-content:center;
+}
+
+.modal-box{
+    width:100%;
+    max-width:390px;
+    background:#0d1b12;
+    border:1px solid #1d5830;
+    border-radius:20px;
+    padding:22px;
+}
+
+.modal-box h2{
+    margin-bottom:8px;
+}
+
+.modal-box p{
+    color:#8fa095;
+    font-size:13px;
+    line-height:1.5;
+    margin-bottom:15px;
+}
+
+input{
+    width:100%;
+    padding:13px;
+    border-radius:10px;
+    border:1px solid #244b31;
+    background:#07110b;
+    color:white;
+    outline:none;
+    margin-bottom:10px;
+}
+
+.close{
+    width:100%;
+    padding:12px;
+    margin-top:8px;
+    border-radius:10px;
+    background:#18301f;
+    color:#fff;
+}
+
+@media(max-width:500px){
+    .hero h1{
+        font-size:26px;
+    }
+
+    .buttons{
+        flex-direction:column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-content">
+        <div class="logo">Predict<span>AI</span> Pro</div>
+        <div class="status">● IA ACTIVE</div>
+    </div>
+</header>
+
+<main class="container">
+
+    <section class="hero">
+        <h1>Pronostics <span>Football IA</span></h1>
+        <p>
+            Analyse intelligente des matchs, probabilités,
+            scores exacts et sélections VIP.
+        </p>
+
+        <div class="buttons">
+            <button class="main-btn" onclick="showMatches()">
+                ⚽ Voir les matchs
+            </button>
+
+            <button class="vip-btn" onclick="openVIP()">
+                ⭐ Accès VIP
+            </button>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="stat">
+            <strong>87%</strong>
+            <span>Indice IA</span>
+        </div>
+
+        <div class="stat">
+            <strong>24/7</strong>
+            <span>Analyse</span>
+        </div>
+
+        <div class="stat">
+            <strong>VIP</strong>
+            <span>Premium</span>
+        </div>
+    </section>
+
+    <div class="section-title" id="matches">
+        <h2>🔥 Pronostics du jour</h2>
+        <span class="badge">IA</span>
+    </div>
+
+    <div class="match">
+        <div class="match-top">
+            <span class="league">Football • Match</span>
+            <span class="live">● ANALYSE IA</span>
+        </div>
+
+        <div class="teams">
+            <div class="team">Équipe A</div>
+            <div class="vs">VS</div>
+            <div class="team">Équipe B</div>
+        </div>
+
+        <div class="prediction">
+            <div class="pred">
+                <small>PARI</small>
+                <strong>+0.5 But</strong>
+            </div>
+
+            <div class="pred">
+                <small>BTTS</small>
+                <strong>Oui</strong>
+            </div>
+
+            <div class="pred">
+                <small>IA</small>
+                <strong>82%</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="match">
+        <div class="match-top">
+            <span class="league">Football • Premium</span>
+            <span class="live">⭐ VIP</span>
+        </div>
+
+        <div class="teams">
+            <div class="team">Équipe C</div>
+            <div class="vs">VS</div>
+            <div class="team">Équipe D</div>
+        </div>
+
+        <div class="prediction">
+            <div class="pred">
+                <small>SCORE</small>
+                <strong>1 - 0</strong>
+            </div>
+
+            <div class="pred">
+                <small>PARI</small>
+                <strong>Prudent</strong>
+            </div>
+
+            <div class="pred">
+                <small>IA</small>
+                <strong>89%</strong>
+            </div>
+        </div>
+    </div>
+
+    <section class="vip-card">
+        <div class="vip-header">
+            <div class="vip-title">⭐ PREDICTAI VIP</div>
+            <div class="vip-lock">🔐</div>
+        </div>
+
+        <ul class="vip-list">
+            <li>Scores exacts</li>
+            <li>Paris probables</li>
+            <li>Sélections prudentes</li>
+            <li>Analyses avancées IA</li>
+            <li>Pronostics premium</li>
+        </ul>
+
+        <button class="vip-access" onclick="openVIP()">
+            🔓 Ouvrir l'espace VIP
+        </button>
+    </section>
+
+</main>
+
+<footer>
+    PredictAI Pro © 2026 — Pronostics assistés par IA
+</footer>
+
+<!-- MODAL VIP -->
+
+<div class="modal" id="vipModal">
+    <div class="modal-box">
+        <h2>⭐ PredictAI VIP</h2>
+
+        <p>
+            Entre ton code VIP pour accéder aux pronostics
+            premium.
+        </p>
+
+        <input
+            type="text"
+            id="vipCode"
+            placeholder="Entre ton code VIP"
+        >
+
+        <button class="vip-access" onclick="checkVIP()">
+            🔐 Vérifier le code
+        </button>
+
+        <button class="close" onclick="closeVIP()">
+            Fermer
+        </button>
+    </div>
+</div>
+
+<script>
+
+function showMatches(){
+    document.getElementById("matches").scrollIntoView({
+        behavior:"smooth"
+    });
+}
+
+function openVIP(){
+    document.getElementById("vipModal").style.display="flex";
+}
+
+function closeVIP(){
+    document.getElementById("vipModal").style.display="none";
+}
+
+function checkVIP(){
+
+    const code =
+        document.getElementById("vipCode").value.trim();
+
+    if(code === ""){
+        alert("Entre ton code VIP.");
+        return;
+    }
+
+    /*
+      Pour l'instant, le code est une démonstration.
+      La vérification réelle pourra être connectée
+      à ta base de données / système de paiement.
+    */
+
+    if(code === "VIP2026"){
+        alert("✅ Code VIP accepté !");
+        closeVIP();
+    }else{
+        alert("❌ Code VIP incorrect.");
+    }
+}
+
+window.onclick = function(event){
+    const modal =
+        document.getElementById("vipModal");
+
+    if(event.target === modal){
+        closeVIP();
+    }
+}
+
+</script>
+
+</body>
+</html>
