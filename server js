@@ -1,0 +1,360 @@
+const express = require("express");
+const cors = require("cors");
+
+const app = express();
+
+const PORT = process.env.PORT || 3000;
+const API_KEY = process.env.API_FOOTBALL_KEY;
+
+const API_URL = "https://v3.football.api-sports.io";
+
+app.use(cors());
+app.use(express.json());
+
+/* =========================
+   PAGE PRINCIPALE DU SERVEUR
+========================= */
+
+app.get("/", (req, res) => {
+    res.json({
+        success: true,
+        app: "PredictAI Pro",
+        message: "Backend PredictAI Pro opérationnel 🚀"
+    });
+});
+
+/* =========================
+   TEST DU SERVEUR
+========================= */
+
+app.get("/api/health", (req, res) => {
+    res.json({
+        success: true,
+        app: "PredictAI Pro",
+        apiConfigured: Boolean(API_KEY)
+    });
+});
+
+/* =========================
+   FONCTION API-FOOTBALL
+========================= */
+
+async function footballRequest(endpoint, params = {}) {
+
+    if (!API_KEY) {
+        throw new Error(
+            "La variable API_FOOTBALL_KEY n'est pas configurée dans Render."
+        );
+    }
+
+    const query = new URLSearchParams(params).toString();
+
+    const url =
+        `${API_URL}${endpoint}` +
+        (query ? `?${query}` : "");
+
+    const response = await fetch(url, {
+        method: "GET",
+        headers: {
+            "x-apisports-key": API_KEY,
+            "Accept": "application/json"
+        }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data?.message ||
+            `Erreur API-Football : ${response.status}`
+        );
+    }
+
+    if (
+        data.errors &&
+        Object.keys(data.errors).length > 0
+    ) {
+        throw new Error(
+            JSON.stringify(data.errors)
+        );
+    }
+
+    return data;
+}
+
+/* =========================
+   MATCHS DU JOUR
+========================= */
+
+app.get("/api/fixtures", async (req, res) => {
+
+    try {
+
+        const date =
+            req.query.date ||
+            new Date().toISOString().slice(0, 10);
+
+        const data = await footballRequest(
+            "/fixtures",
+            {
+                date: date
+            }
+        );
+
+        const matches =
+            (data.response || []).map(match => ({
+
+                id: match.fixture?.id,
+
+                date: match.fixture?.date,
+
+                status: match.fixture?.status?.short,
+
+                elapsed:
+                    match.fixture?.status?.elapsed,
+
+                league: {
+                    id: match.league?.id,
+                    name: match.league?.name,
+                    country: match.league?.country,
+                    logo: match.league?.logo
+                },
+
+                home: {
+                    id: match.teams?.home?.id,
+                    name: match.teams?.home?.name,
+                    logo: match.teams?.home?.logo
+                },
+
+                away: {
+                    id: match.teams?.away?.id,
+                    name: match.teams?.away?.name,
+                    logo: match.teams?.away?.logo
+                },
+
+                goals: {
+                    home: match.goals?.home,
+                    away: match.goals?.away
+                }
+
+            }));
+
+        res.json({
+            success: true,
+            count: matches.length,
+            matches: matches
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Erreur /api/fixtures :",
+            error.message
+        );
+
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+/* =========================
+   MATCHS EN DIRECT
+========================= */
+
+app.get("/api/live", async (req, res) => {
+
+    try {
+
+        const data = await footballRequest(
+            "/fixtures",
+            {
+                live: "all"
+            }
+        );
+
+        const matches =
+            (data.response || []).map(match => ({
+
+                id: match.fixture?.id,
+
+                date: match.fixture?.date,
+
+                status: match.fixture?.status?.short,
+
+                elapsed:
+                    match.fixture?.status?.elapsed,
+
+                league: {
+                    id: match.league?.id,
+                    name: match.league?.name,
+                    country: match.league?.country,
+                    logo: match.league?.logo
+                },
+
+                home: {
+                    id: match.teams?.home?.id,
+                    name: match.teams?.home?.name,
+                    logo: match.teams?.home?.logo
+                },
+
+                away: {
+                    id: match.teams?.away?.id,
+                    name: match.teams?.away?.name,
+                    logo: match.teams?.away?.logo
+                },
+
+                goals: {
+                    home: match.goals?.home,
+                    away: match.goals?.away
+                }
+
+            }));
+
+        res.json({
+            success: true,
+            count: matches.length,
+            matches: matches
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Erreur /api/live :",
+            error.message
+        );
+
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+/* =========================
+   PRONOSTIC API-FOOTBALL
+========================= */
+
+app.get(
+    "/api/predictions/:fixtureId",
+    async (req, res) => {
+
+        try {
+
+            const fixtureId =
+                req.params.fixtureId;
+
+            if (!/^\d+$/.test(fixtureId)) {
+
+                return res.status(400).json({
+                    success: false,
+                    error: "ID du match invalide."
+                });
+            }
+
+            const data =
+                await footballRequest(
+                    "/predictions",
+                    {
+                        fixture: fixtureId
+                    }
+                );
+
+            res.json({
+                success: true,
+                prediction:
+                    data.response?.[0] || null
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Erreur /api/predictions :",
+                error.message
+            );
+
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+);
+
+/* =========================
+   STATISTIQUES DU MATCH
+========================= */
+
+app.get(
+    "/api/statistics/:fixtureId",
+    async (req, res) => {
+
+        try {
+
+            const fixtureId =
+                req.params.fixtureId;
+
+            if (!/^\d+$/.test(fixtureId)) {
+
+                return res.status(400).json({
+                    success: false,
+                    error: "ID du match invalide."
+                });
+            }
+
+            const data =
+                await footballRequest(
+                    "/fixtures/statistics",
+                    {
+                        fixture: fixtureId
+                    }
+                );
+
+            res.json({
+                success: true,
+                statistics:
+                    data.response || []
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Erreur /api/statistics :",
+                error.message
+            );
+
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+);
+
+/* =========================
+   DÉMARRAGE DU SERVEUR
+========================= */
+
+app.listen(PORT, () => {
+
+    console.log(
+        "================================"
+    );
+
+    console.log(
+        "🚀 PredictAI Pro Backend"
+    );
+
+    console.log(
+        `🌐 Port : ${PORT}`
+    );
+
+    console.log(
+        `🔑 API Football configurée : ${Boolean(API_KEY)}`
+    );
+
+    console.log(
+        "================================"
+    );
+});
